@@ -1,4 +1,4 @@
-import { Die } from "./roll-die";
+import { Die } from "./Die";
 
 describe("Roll Die", () => {
   it("rolls a 6 sided die", () => {
