@@ -11,7 +11,6 @@ export class Poker {
     private deck: Deck
   ) {}
 
-  // Create a new Poker Game
   static create(players: string[], cardsAmount: number) {
     const pokerDeck = [];
     for (const suit of Object.values(Suit)) {
@@ -26,9 +25,7 @@ export class Poker {
     return new Poker(playersWithScore, cardsAmount, deck);
   }
 
-  // Play a game of poker
   play() {
-    // Shuffle the deck of cards
     this.deck.shuffle();
 
     // Deal cards to players
@@ -75,7 +72,6 @@ export class Poker {
     return { winner, players: this.players };
   }
 
-  // Deal cards to players
   private dealCards(
     players: Player[],
     cardsAmount: number

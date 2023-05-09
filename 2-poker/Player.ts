@@ -1,4 +1,3 @@
-import { Card } from "./Card";
 import { Deck } from "./Deck";
 import { Hand } from "./Hand";
 
@@ -41,5 +40,17 @@ export class Player {
 
   increaseScore() {
     ++this.score;
+  }
+
+  doublePoints() {
+    this.score = this.score * 2;
+  }
+
+  setRoyalFlush() {
+    this.hasRoyalFlush = true;
+  }
+
+  previousMatchRoyalFlush() {
+    return this.hasRoyalFlush;
   }
 }
