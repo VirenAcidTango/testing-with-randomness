@@ -1,11 +1,15 @@
 import { Card } from "./Card";
 import { Deck } from "./Deck";
+import { Hand } from "./Hand";
 
 export class Player {
-  private hand: Card[];
+  private hand: Hand;
+
+  private hasRoyalFlush: boolean;
 
   private constructor(private name: string, private score: number) {
-    this.hand = [];
+    this.hand = Hand.create([]);
+    this.hasRoyalFlush = false;
   }
 
   static create(name: string) {
@@ -15,12 +19,16 @@ export class Player {
   dealHand(deck: Deck, cardsAmount: number) {
     for (let i = 0; i < cardsAmount; i++) {
       const card = deck.draw();
-      this.hand.push(card);
+      this.hand.add(card);
     }
   }
 
-  getHand() {
-    return this.hand;
+  cardsAmount() {
+    return this.hand.cardsAmount();
+  }
+
+  evaluateHand() {
+    return this.hand.evaluate();
   }
 
   getScore() {
@@ -29,5 +37,9 @@ export class Player {
 
   getName() {
     return this.name;
+  }
+
+  increaseScore() {
+    ++this.score;
   }
 }
