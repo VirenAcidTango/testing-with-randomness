@@ -14,14 +14,11 @@ describe("Roll Die", () => {
     const ITERATIONS = 100;
     const sixSidedDie = new Die(6);
 
-    let index = 0;
-    while (index < ITERATIONS) {
+    for (let index = 0; index < ITERATIONS; index++) {
       const rollResult = sixSidedDie.roll();
 
       expect(rollResult).toBeGreaterThan(0);
       expect(rollResult).toBeLessThanOrEqual(6);
-
-      ++index;
     }
   });
 });
