@@ -1,14 +1,16 @@
+import { CardDealer } from "./CardDealer";
 import { Deck } from "./Deck";
 import { Hand } from "./Hand";
+import { HandCombination } from "./HandCombination";
 
 export class Player {
   private hand: Hand;
 
-  private hasRoyalFlush: boolean;
+  private previousMatchStraightFlush: boolean;
 
   private constructor(private name: string, private score: number) {
     this.hand = Hand.create([]);
-    this.hasRoyalFlush = false;
+    this.previousMatchStraightFlush = false;
   }
 
   static create(name: string) {
@@ -16,14 +18,11 @@ export class Player {
   }
 
   dealHand(deck: Deck, cardsAmount: number) {
-    for (let i = 0; i < cardsAmount; i++) {
-      const card = deck.draw();
-      this.hand.add(card);
-    }
+    this.hand = Hand.create(CardDealer.deal(cardsAmount, deck));
   }
 
   cardsAmount() {
-    return this.hand.cardsAmount();
+    return this.hand.getCardsAmount();
   }
 
   evaluateHand() {
@@ -38,19 +37,23 @@ export class Player {
     return this.name;
   }
 
+  getHand() {
+    return this.hand;
+  }
+
+  getPreviousMatchStraightFlush() {
+    return this.previousMatchStraightFlush;
+  }
+
+  setPreviousMatchStraightFlush(straightFlush: boolean) {
+    this.previousMatchStraightFlush = straightFlush;
+  }
+
   increaseScore() {
     ++this.score;
   }
 
   doublePoints() {
     this.score = this.score * 2;
-  }
-
-  setRoyalFlush() {
-    this.hasRoyalFlush = true;
-  }
-
-  previousMatchRoyalFlush() {
-    return this.hasRoyalFlush;
   }
 }

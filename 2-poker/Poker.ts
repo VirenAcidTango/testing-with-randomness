@@ -1,5 +1,7 @@
 import { Card } from "./Card";
+import { CardDealer } from "./CardDealer";
 import { Deck } from "./Deck";
+import { HandCombination } from "./HandCombination";
 import { Player } from "./Player";
 import { Rank } from "./Rank";
 import { Suit } from "./Suit";
@@ -32,62 +34,74 @@ export class Poker {
     this.players.forEach((player) =>
       player.dealHand(this.deck, this.cardsAmount)
     );
-    const playerCards = this.dealCards(this.players, this.cardsAmount);
 
     // Evaluate each player's hand
-    const playerRanks: { player: Player; rank: Rank }[] = [];
+    const playerCombinations: {
+      player: Player;
+      handCombination: HandCombination;
+    }[] = [];
     for (const player of this.players) {
-      const rank = player.evaluateHand();
-      playerRanks.push({ player, rank });
+      const combination = player.evaluateHand();
+      playerCombinations.push({ player, handCombination: combination });
     }
 
     // Determine the winner
-    const firstPlayerRank = playerRanks[0];
-    let winner = firstPlayerRank.player;
-    let winningRank = firstPlayerRank.rank;
+    const firstPlayerCombination = playerCombinations[0];
+    let winner = firstPlayerCombination.player;
+    let winningCombination = firstPlayerCombination.handCombination;
 
-    for (let index = 1; index < playerRanks.length; index++) {
-      const player = playerRanks[index].player;
-      const rank = playerRanks[index].rank;
+    for (let index = 1; index < playerCombinations.length; index++) {
+      const player = playerCombinations[index].player;
+      const combination = playerCombinations[index].handCombination;
 
-      if (rank > winningRank) {
+      const combinationPriority = Poker.COMBINATION_PRIORITY[combination];
+      const winningCombinationPriority =
+        Poker.COMBINATION_PRIORITY[winningCombination];
+      if (combinationPriority > winningCombinationPriority) {
         winner = player;
-        winningRank = rank;
-      } else if (rank === winningRank) {
+        winningCombination = combination;
+      } else if (combination === winningCombination) {
         // In case of a tie, the player with the higher card wins
-        const winnerCards = playerCards.get(winner as Player) || [];
-        const otherCards = playerCards.get(player) || [];
+        const winnerCards = winner.getHand().getCards();
+        const otherCards = player.getHand().getCards();
         if (winnerCards.length > 0 && otherCards.length > 0) {
           const winnerHighCard = winnerCards[winnerCards.length - 1].rank;
           const playerHighCard = otherCards[otherCards.length - 1].rank;
           if (playerHighCard > winnerHighCard) {
             winner = player;
-            winningRank = rank;
+            winningCombination = combination;
           }
         }
       }
     }
 
+    const isWinningCombinationStraightFlush =
+      winningCombination == HandCombination.STRAIGHT_FLUSH;
+
     winner.increaseScore();
+    if (
+      winner.getPreviousMatchStraightFlush() &&
+      isWinningCombinationStraightFlush
+    ) {
+      winner.doublePoints();
+    }
+    winner.setPreviousMatchStraightFlush(isWinningCombinationStraightFlush);
     return { winner, players: this.players };
   }
 
-  private dealCards(
-    players: Player[],
-    cardsAmount: number
-  ): Map<Player, Card[]> {
-    const playerCards = new Map<Player, Card[]>();
-    for (const player of players) {
-      playerCards.set(player, []);
-    }
-    for (let i = 0; i < cardsAmount; i++) {
-      for (const [_, cards] of playerCards) {
-        const card = this.deck.draw();
-        if (card) {
-          cards.push(card);
-        }
-      }
-    }
-    return playerCards;
+  getPlayers() {
+    return this.players;
   }
+
+  static COMBINATION_PRIORITY: Record<HandCombination, number> = {
+    straight_flush: 8,
+    four_of_a_kind: 7,
+    full_house: 6,
+    flush: 5,
+    straight: 4,
+    three_of_a_kind: 3,
+    two_pair: 2,
+    pair: 1,
+    high_card: 0,
+  };
 }

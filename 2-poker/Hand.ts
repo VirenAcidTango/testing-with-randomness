@@ -1,4 +1,5 @@
 import { Card } from "./Card";
+import { HandCombination } from "./HandCombination";
 import { Rank } from "./Rank";
 
 export class Hand {
@@ -12,11 +13,15 @@ export class Hand {
     this.cards.push(card);
   }
 
-  cardsAmount() {
+  getCardsAmount() {
     return this.cards.length;
   }
 
-  evaluate(): Rank {
+  getCards() {
+    return this.cards;
+  }
+
+  evaluate(): HandCombination {
     const sortedCards = this.cards.sort((a, b) => {
       const rankA = Object.values(Rank).indexOf(a.rank);
       const rankB = Object.values(Rank).indexOf(b.rank);
@@ -24,39 +29,38 @@ export class Hand {
     });
 
     if (this.hasStraightFlush(sortedCards)) {
-      return Rank.ACE;
+      return HandCombination.STRAIGHT_FLUSH;
     }
 
     if (this.hasFourOfAKind(sortedCards)) {
-      return Rank.KING;
+      return HandCombination.FOUR_OF_A_KIND;
     }
 
     if (this.hasFullHouse(sortedCards)) {
-      return Rank.QUEEN;
+      return HandCombination.FULL_HOUSE;
     }
 
     if (this.hasFlush(sortedCards)) {
-      return Rank.JACK;
+      return HandCombination.FLUSH;
     }
 
     if (this.hasStraight(sortedCards)) {
-      return Rank.TEN;
+      return HandCombination.STRAIGHT;
     }
 
     if (this.hasThreeOfAKind(sortedCards)) {
-      return Rank.NINE;
+      return HandCombination.THREE_OF_A_KIND;
     }
 
     if (this.hasTwoPairs(sortedCards)) {
-      return Rank.EIGHT;
+      return HandCombination.TWO_PAIR;
     }
 
     if (this.hasOnePair(sortedCards)) {
-      return Rank.SEVEN;
+      return HandCombination.PAIR;
     }
 
-    // Otherwise, return the rank of the highest card
-    return sortedCards[sortedCards.length - 1].rank;
+    return HandCombination.HIGH_CARD;
   }
 
   private hasStraightFlush(cards: Card[]): boolean {
