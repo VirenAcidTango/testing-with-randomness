@@ -51,7 +51,8 @@ describe("Play Poker game", () => {
     ];
     const player1Name = "Player1";
     const player2Name = "Player2";
-    const poker = Poker.create([player1Name, player2Name], 5);
+    const cardsAmount = 5;
+    const poker = Poker.create([player1Name, player2Name], cardsAmount);
 
     jest
       .spyOn(CardDealer, "deal")
